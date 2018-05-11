@@ -3,8 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Eduard/Documents/NetBeansProjects/TicTacToeWeb/web/index.html</file>
-            <file>file:/C:/Users/Eduard/Documents/NetBeansProjects/TicTacToeWeb/src/java/filters/LoginFilter.java</file>
+            <file>file:/C:/Users/Eduard/Documents/NetBeansProjects/TicTacToeWeb/src/java/utility/ConnectionHelper.java</file>
+            <file>file:/C:/Users/Eduard/Documents/NetBeansProjects/TicTacToeWeb/web/login.jsp</file>
+            <file>file:/C:/Users/Eduard/Documents/NetBeansProjects/TicTacToeWeb/web/index.jsp</file>
+            <file>file:/C:/Users/Eduard/Documents/NetBeansProjects/TicTacToeWeb/src/java/utility/AuthUser.java</file>
+            <file>file:/C:/Users/Eduard/Documents/NetBeansProjects/TicTacToeWeb/src/java/servlets/Login.java</file>
+            <file>file:/C:/Users/Eduard/Documents/NetBeansProjects/TicTacToeWeb/src/java/servlets/MatchMaking.java</file>
+            <file>file:/C:/Users/Eduard/Documents/NetBeansProjects/TicTacToeWeb/src/java/servlets/Logout.java</file>
             <file>file:/C:/Users/Eduard/Documents/NetBeansProjects/TicTacToeWeb/web/WEB-INF/web.xml</file>
         </group>
     </open-files>
