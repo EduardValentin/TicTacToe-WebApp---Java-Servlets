@@ -35,43 +35,32 @@ public class Login extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, SQLException {
+    throws ServletException, IOException, SQLException {
         //try (PrintWriter out = response.getWriter()) {
-            HttpSession session = request.getSession(true);
-            String username = request.getParameter("username");
-            String password = request.getParameter("password");
+        HttpSession session = request.getSession(true);
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
 
-            Cookie cookies[] = request.getCookies();
-            if(cookies != null) {
+        if (AuthUser.userIsLoggedIn(request)) {
+            session.setAttribute("message", "<center><h1>You are already logged in.</h1></center>");
+            response.sendRedirect("index.jsp"); // return back to caller
+            return;
+        }
+        else if (AuthUser.checkUser(username, password)) {
+            //Cookie loginCookie = new Cookie("loggedWithUsername", username);
+            //loginCookie.setMaxAge(60 * 60 * 24);
+            //response.addCookie(loginCookie);
+            session.setAttribute("loggedWithUser", username);
+            session.setAttribute("message", "<center><h1>You logged in.</h1></center>");
+            response.sendRedirect("index.jsp"); // return back to caller
+            return;
 
-                for(Cookie cookie : cookies) {
-                    if(cookie.getValue().equals(username)){
-                        // print that user is already logged in
-                        //request.setAttribute("message","<center><h1>You are already logged in.You will be redirected to home page in a few seconds.</h1></center>");
-                        session.setAttribute("message","<center><h1>You are already logged in.</h1></center>");
-                        //request.getRequestDispatcher("index.jsp").forward(request, response);  
-                        response.sendRedirect("index.jsp");
-                        return;
-                    } else if (AuthUser.checkUser(username, password)) {
-                        Cookie loginCookie = new Cookie("username",username);
-                        loginCookie.setMaxAge(60*60*24);
-                        response.addCookie(loginCookie);
-                        //request.setAttribute("message","<center><h1>You logged in.You will be redirected to home page in a few seconds.</h1></center>");
-                        session.setAttribute("message","<center><h1>You logged in.</h1></center>");
-                        //request.getRequestDispatcher("index.jsp").forward(request, response);  
-                        response.sendRedirect("index.jsp");
-                        return;
+        } else {
+            session.setAttribute("message", "<center><h1>Username or password are incorect, try again and make sure you have an accout.</h1></center>");
+            response.sendRedirect(request.getHeader("referer")); // return back to caller
+            return;
+        }
 
-                    } else {
-                        //request.setAttribute("message","<center><h1>Username or password are incorect, try again and make sure you have an accout.</h1></center>");
-
-                        session.setAttribute("message","<center><h1>Username or password are incorect, try again and make sure you have an accout.</h1></center>");
-                        //request.getRequestDispatcher("login.jsp").forward(request, response); 
-                        response.sendRedirect("login.jsp");
-                        return;
-                    }
-                }
-            }
         //}
 
     }
@@ -86,7 +75,7 @@ public class Login extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    throws ServletException, IOException {
         try {
             processRequest(request, response);
         } catch (SQLException ex) {
@@ -104,14 +93,14 @@ public class Login extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    throws ServletException, IOException {
         try {
             processRequest(request, response);
         } catch (SQLException ex) {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        
+
+
     }
 
     /**
@@ -122,21 +111,21 @@ public class Login extends HttpServlet {
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
+    } // </editor-fold>
 
     @Override
     public void init() throws ServletException {
-        super.init(); 
+        super.init();
         connectionHelper = ConnectionHelper.getInstance();
         connectionHelper.openConnection();
     }
 
     @Override
     public void destroy() {
-        super.destroy(); 
+        super.destroy();
         connectionHelper.closeConnection();
     }
-    
-    
-    
+
+
+
 }

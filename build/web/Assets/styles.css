@@ -1,0 +1,82 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 13, 2018, 10:14:44 AM
+    Author     : eduar
+*/
+html,body{
+    font-family: 'Open-Sans',sans-serif;
+    margin: 0;
+}
+
+a{
+    color: white;
+    text-decoration: none;
+}
+
+.forms form {
+    display: block;
+    height: 100%
+}
+
+.forms input[type="submit"] {
+    -webkit-appearance: none;
+    background: rgba(0,0,0,0);
+    border: none;
+    font-weight: 700;
+    padding: 10px 30px;
+    color: whitesmoke;
+    transition: all .2s linear;
+    height: 100%;
+    display: block;
+    outline: none;
+    cursor:pointer;
+}
+
+nav form:hover > input[type="submit"] {
+    background: rgba(82, 82, 82, 0.48);
+}
+
+nav{
+    justify-content: space-between;
+    background: #1d1d1d;
+    height: 60px
+}
+#nav-title{
+    margin:0 auto;
+}
+#nav-title a{
+    color: whitesmoke !important;
+}
+
+.row-flex-container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+.row-flex-container .forms {
+     height: 100%;
+}
+
+#game-container{
+    display: block;
+    width: 500px;
+    height: 500px;
+    margin: 0 auto;
+    border: 1px solid black;
+}
+
+#game-container > .grid-row{
+    height: 33%;
+}
+.square{
+    display: block;
+    width: 33%;
+    height: 100%;
+    border:1px solid black;
+}
+

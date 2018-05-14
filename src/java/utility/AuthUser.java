@@ -11,6 +11,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -21,16 +24,24 @@ public class AuthUser {
     public static boolean checkUser(String user, String pass) {
         boolean st = false;
         try {
-            ConnectionHelper  connectionHelper = ConnectionHelper.getInstance();
+            ConnectionHelper connectionHelper = ConnectionHelper.getInstance();
             Connection conn = (Connection) connectionHelper.getConnectionToDB();
             PreparedStatement ps = conn.prepareStatement("select * from users where username=? and password=?");
             ps.setString(1, user);
             ps.setString(2, pass);
             ResultSet rs = ps.executeQuery();
             st = rs.next();
-         } catch (SQLException ex) {
+        } catch (SQLException ex) {
             Logger.getLogger(AuthUser.class.getName()).log(Level.SEVERE, null, ex);
         }
         return st;
+    }
+
+    public static boolean userIsLoggedIn(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if(session != null && session.getAttribute("loggedWithUser") != null) {
+            return true;
+        }
+        return false;
     }
 }
