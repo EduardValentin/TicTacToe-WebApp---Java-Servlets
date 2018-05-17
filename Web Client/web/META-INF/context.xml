@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/TicTacToeWeb">
+
+<Resource name="jdbc/TicTacToeDb" auth="Container" type="javax.sql.DataSource"
+		username="admin" password="superduperpwd" driverClassName="com.mysql.jdbc.Driver"
+		url="jdbc:mysql://localhost/tictactoedb" maxActive="15" maxIdle="3" />
+
+</Context>

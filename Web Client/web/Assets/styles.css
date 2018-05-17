@@ -1,0 +1,179 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 13, 2018, 10:14:44 AM
+    Author     : eduar
+*/
+html,body{
+    font-family: 'Open-Sans',sans-serif;
+    margin: 0;
+}
+body{
+    padding-bottom: 20px;
+}
+input[type="submit"] {
+    cursor: pointer;
+}
+a{
+    color: white;
+    text-decoration: none;
+}
+
+.nav-forms form {
+    display: block;
+    height: 60px;
+}
+
+.nav-forms input[type="submit"] {
+    -webkit-appearance: none;
+    background: rgba(0,0,0,0);
+    border: none;
+    font-weight: 700;
+    padding: 10px 30px;
+    color: whitesmoke;
+    transition: all .2s linear;
+    height: 100%;
+    display: block;
+    outline: none;
+    cursor:pointer;
+}
+
+nav form:hover > input[type="submit"] {
+    background: rgba(82, 82, 82, 0.48);
+}
+
+nav{
+    justify-content: space-between;
+    background: #1d1d1d;
+    height: 60px;
+    margin-bottom: 50px;
+}
+#nav-title{
+    margin:0 auto;
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+#nav-title a{
+    color: whitesmoke !important;
+}
+
+.row-flex-container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+.row-flex-container .nav-forms {
+    position: absolute;
+    right: 0;
+}
+
+#game-container{
+    display: block;
+    width: 500px;
+    height: 500px;
+    margin: 0 auto;
+}
+
+#game-container > .grid-row{
+    height: 33%;
+}
+.square{
+    display: flex;
+    width: 33%;
+    height: 100%;
+    border:1px solid black;
+    font-size: 7em;
+    border: 1px solid black;
+    justify-content: center;
+    align-items: center;
+    background-size: contain !important;
+}
+
+.collumn-flex-container{
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.user-form input[type="text"], .user-form input[type="password"]{
+    margin: 15px auto;
+    border: none;
+    padding: 20px;
+    border-bottom: 1px solid #dedede;
+}
+
+.user-form input[type="text"]:focus, .user-form input[type="password"]:focus{
+    outline-color: gray;
+}
+
+.custom-button{
+    -webkit-appearance: none;
+    padding: 15px 30px;
+    background: #e0e0e0;
+    border: 1px solid #bfbfbf;
+    color: #3a3a3a;
+    font-weight: 700;
+    margin-top: 10px;
+    transition: all 200ms ease-in-out;
+}
+.custom-button:hover{
+    background: white;
+    color: black;
+}
+form label{
+    font-weight: 700;
+    color: #4a4a4a;
+}
+
+.label-wrap{
+    display: flex;
+    flex-direction: column;
+}
+
+#play-button{
+    padding:20px 50px;
+    margin: 50px auto 0 auto;
+    display: block;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+.show{
+    visibility: visible;
+}
+
+#loading {
+    position: absolute; 
+    width: 100%;
+    height: 100%;
+    background: url('spinner.gif') no-repeat center center;
+}
+
+#game-info {
+    display:flex;
+    width:100%;
+    flex-direction: column;
+    align-items:center;
+    justify-content: center;
+}
+
+#playing-with{
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#go-first{
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
