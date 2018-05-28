@@ -18,6 +18,7 @@
     </head>
     <body>
         <%@ include file="header.jsp" %>
+        
         <div id="game-info">
             <div id="game-status"></div>
             <div id="playing-with"></div>

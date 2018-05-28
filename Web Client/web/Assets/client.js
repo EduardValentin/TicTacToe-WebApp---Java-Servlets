@@ -11,7 +11,7 @@ var table = [
     [-1, -1, -1],
     [-1, -1, -1]
 ]; // In casuta se pune 1 daca e casuta ocupata de player,altfel 0 daca e ocupata de oponent, -1 daca e libera
-var socket = new WebSocket('ws://localhost:9999/TicTacToeWeb/websocketendpoint');
+var socket = new WebSocket('ws://localhost:8080/TicTacToeWeb/websocketendpoint');
 var squares;
 var playingWithDiv = document.getElementById("playing-with");
 var gameStatusDiv = document.getElementById("game-status");
@@ -37,14 +37,16 @@ socket.onmessage = function(event) {
     var messageParts = message.split("|");
     console.log(messageParts);
     switch (messageParts[0]) {
-        case "LOST":
-            endGameMessageHtml.innerHTML = "YOU LOST";
-            break;
         case "MOVE":
             let squareNr = parseInt(messageParts[1]);
             doOpponentMove(squareNr);
-            turn = 1;
-            gameStatusDiv = "Your turn."
+            if(checkGameState()!= 0){
+                // check if opponent won
+                turn = 1;
+                gameStatusDiv.innerHTML = "Your turn."
+            } else {
+                gameStatusDiv.innerHTML = "GameOver.";
+            }
             break;
         case "WAIT":
             gameStatusDiv.innerHTML = "Searching for opponent...";
@@ -112,8 +114,50 @@ function doPlayerMove() {
         let packet = "MOVE|" + playerUsername + "|" + opponentUsername + "|" + onSquareNr;
         //this.innerHTML = window.playerMark;
         this.style.background = "url('" + playerMark + "') no-repeat center center";
-        turn = 0;
-        gameStatusDiv.innerHTML="Opponent turn.";
-        socket.send(packet);
+        if(checkGameState() != 1){
+            turn = 0;
+            gameStatusDiv.innerHTML="Opponent turn.";
+            socket.send(packet);
+        } else {
+            gameStatusDiv.innerHTML = "Game Over";
+        }
     }
+}
+
+function checkGameState(){
+    // player win conditions:
+    var isSetRow1 = table[0][0] == 1 && table[0][1] == 1 && table[0][2] == 1,
+        isSetRow2 = table[1][0] == 1 && table[1][1] == 1 && table[1][2] == 1,
+        isSetRow3 = table[2][0] == 1 && table[2][1] == 1 && table[2][2] == 1,
+        isSetCol1 = table[0][0] == 1 && table[1][0] == 1 && table[2][0] == 1,
+        isSetCol2 = table[0][1] == 1 && table[1][1] == 1 && table[2][1] == 1,
+        isSetCol3 = table[0][2] == 1 && table[1][2] == 1 && table[2][2] == 1,
+        isSetDiagPr = table[0][0] == 1 && table[1][1] == 1 && table[2][2] == 1,
+        isSetDiagSec = table[0][2] == 1 && table[1][1] == 1 && table[2][0] == 1;
+    
+    var isWin = isSetRow1 || isSetRow2 || isSetRow3 || isSetCol1 || isSetCol2 || isSetCol3 || isSetDiagPr || isSetDiagSec;
+    if( isWin == true ){
+        console.log("Player wins.");
+        socket.send("WON|"+playerUsername + "|" + opponentUsername);
+        alert("You won. Refresh browser to queue up for a new game.");
+        return 1;   // you won, yay
+    }
+    
+        isSetRow1 = table[0][0] == 0 && table[0][1] == 0 && table[0][2] == 0;
+        isSetRow2 = table[1][0] == 0 && table[1][1] == 0 && table[1][2] == 0;
+        isSetRow3 = table[2][0] == 0 && table[2][1] == 0 && table[2][2] == 0;
+        isSetCol1 = table[0][0] == 0 && table[1][0] == 0 && table[2][0] == 0;
+        isSetCol2 = table[0][1] == 0 && table[1][1] == 0 && table[2][1] == 0;
+        isSetCol3 = table[0][2] == 0 && table[1][2] == 0 && table[2][2] == 0;
+        isSetDiagPr = table[0][0] == 0 && table[1][1] == 0 && table[2][2] == 0;
+        isSetDiagSec = table[0][2] == 0 && table[1][1] == 0 && table[2][0] == 0;
+    
+    isWin = isSetRow1 || isSetRow2 || isSetRow3 || isSetCol1 || isSetCol2 || isSetCol3 || isSetDiagPr || isSetDiagSec;
+    if( isWin == true ){
+        console.log("Opponent wins.");
+        socket.send("WON|"+opponentUsername + "|" + playerUsername);
+        alert("Opponent won. Refresh browser to queue up for a new game.");
+        return 0;   // opponent won, sad
+    }
+    return 2;   // nothing happened
 }

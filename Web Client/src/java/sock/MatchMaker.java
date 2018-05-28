@@ -5,8 +5,14 @@
  */
 package sock;
 
+import com.mysql.jdbc.Connection;
+import data.DatabaseConnection;
 import data.PlayerModel;
 import java.io.IOException;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Date;
+import javax.annotation.Resource;
 import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -16,12 +22,15 @@ import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import javax.inject.Inject;
 import javax.enterprise.context.ApplicationScoped;
+import javax.sql.DataSource;
 
 @ApplicationScoped
 @ServerEndpoint("/websocketendpoint")
 public class MatchMaker {
 	private SessionHandler sessionHandler = SessionHandler.getInstance();
-        
+        //private DatabaseConnection databaseCon = DatabaseConnection.getInstance();
+        @Resource(name = "jdbc/TicTacToeDb")
+        private DataSource dbResource;
 	@OnOpen
 	public void onOpen(Session session,EndpointConfig config) throws IOException{
             System.out.println("Open Connection ...");
@@ -34,7 +43,7 @@ public class MatchMaker {
 	}
 	
 	@OnMessage
-	public void onMessage(String message,Session session) throws IOException{
+	public void onMessage(String message,Session session) throws IOException, SQLException{
             System.out.println("Message from the client: " + message);
             String[] parts = message.split("\\|");
             String typeOfOperation = parts[0];
@@ -75,9 +84,19 @@ public class MatchMaker {
                 case "WON" :
                    from = parts[1];
                    to = parts[2];
-                   System.out.println(from + " won the game.");
-                   sessionHandler.sendMessageTo(to, "LOST");
-                   /*** TODO: Save match data into database ***/
+                   System.out.println(from + " won the game.");                 
+                   // we need to save the game to database
+                   String insertQuery = "INSERT INTO games(won,lost,game_date) VALUES (?,?,TO_DATE(?,'day-mon-yyyy hh24:mi:ss'))";
+                   try(Connection con = (Connection) dbResource.getConnection();
+                       PreparedStatement ps = con.prepareStatement(insertQuery);
+                    ){
+                       ps.setString(1, from);
+                       ps.setString(2, to);
+                       Date d= new Date();
+                       ps.setString(0,d.toString());
+                       ps.executeUpdate();
+                   }
+                   
                    sessionHandler.removeFromPlaying(to);
                    sessionHandler.removeFromPlaying(from);
                    break;

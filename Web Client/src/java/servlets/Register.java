@@ -5,6 +5,7 @@
  */
 package servlets;
 
+import data.DatabaseConnection;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -25,9 +26,9 @@ public class Register extends HttpServlet {
 
     public static final Pattern EMAIL_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
     
+    //DatabaseConnection databaseCon = DatabaseConnection.getInstance();
     @Resource(name = "jdbc/TicTacToeDb")
-    private static DataSource dbResource;
-    
+    private DataSource dbResource;
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, SQLException {
         response.setContentType("text/html;charset=UTF-8");

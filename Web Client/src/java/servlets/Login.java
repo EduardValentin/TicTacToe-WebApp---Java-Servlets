@@ -5,6 +5,7 @@
  */
 package servlets;
 
+import data.DatabaseConnection;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -28,18 +29,10 @@ import javax.sql.DataSource;
  */
 public class Login extends HttpServlet {
     
+    //DatabaseConnection databaseCon = DatabaseConnection.getInstance();
     @Resource(name = "jdbc/TicTacToeDb")
     private DataSource dbResource;
     
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException, SQLException {
         //try (PrintWriter out = response.getWriter()) {
@@ -74,14 +67,6 @@ public class Login extends HttpServlet {
 
     }
 
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
@@ -92,14 +77,7 @@ public class Login extends HttpServlet {
         }
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+ 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
@@ -111,8 +89,5 @@ public class Login extends HttpServlet {
 
 
     }
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    } // </editor-fold>
+   
 }
