@@ -11,7 +11,7 @@ var table = [
     [-1, -1, -1],
     [-1, -1, -1]
 ]; // In casuta se pune 1 daca e casuta ocupata de player,altfel 0 daca e ocupata de oponent, -1 daca e libera
-var socket = new WebSocket('ws://localhost:8080/TicTacToeWeb/websocketendpoint');
+var socket = new WebSocket('ws://localhost:9999/TicTacToeWeb/websocketendpoint');
 var squares;
 var playingWithDiv = document.getElementById("playing-with");
 var gameStatusDiv = document.getElementById("game-status");
