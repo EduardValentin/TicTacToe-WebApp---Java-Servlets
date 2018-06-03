@@ -16,7 +16,15 @@
     <body>
         <%@ include file="header.jsp" %>
       
-        
+       
+        <% 
+            if(session.getAttribute("message") != null) {
+                out.println("<div class=\"message-popup collumn-flex-container\">" + session.getAttribute("message") + "</div>");
+
+                session.removeAttribute("message");
+            }
+        %>
+  
         <form action="Register" method="POST" class="collumn-flex-container user-form" />
             <div class="label-wrap">
                 <label for="first-name">First Name:</label>

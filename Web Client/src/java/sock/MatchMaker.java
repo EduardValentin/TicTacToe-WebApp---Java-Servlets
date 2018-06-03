@@ -13,7 +13,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -25,16 +24,23 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
-import javax.enterprise.context.ApplicationScoped;
+//import javax.enterprise.context.ApplicationScoped;
 import javax.sql.DataSource;
 
-@ApplicationScoped
+//@ApplicationScoped
 @ServerEndpoint("/websocketendpoint")
 public class MatchMaker {
     private final SessionHandler sessionHandler = SessionHandler.getInstance();
 
-    @Resource(name = "jdbc/TicTacToeDb")
-    private DataSource dbResource;
+    static{
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+
+            System.out.println("JDBC Class found");
+        }catch(ClassNotFoundException e){
+            System.err.println("ERROR: Class not found in server socket");
+        }
+    }
     @OnOpen
     public void onOpen(Session session, EndpointConfig config) throws IOException {
         System.out.println("Open Connection ...");
@@ -93,13 +99,6 @@ public class MatchMaker {
 
                 String insertQuery = "INSERT INTO games(won,lost,date) VALUES (?,?,?)";
 
-                try {
-                    Class.forName("com.mysql.jdbc.Driver");
-                } catch (ClassNotFoundException e) {
-                    System.out.println("Class not found " + e);
-                }
-                System.out.println("JDBC Class found");
-
                 try (Connection con = (Connection) DriverManager.getConnection(
                     "jdbc:mysql://localhost/tictactoedb", "admin", "superduperpwd")) {
                     PreparedStatement ps = con.prepareStatement(insertQuery);
@@ -118,7 +117,33 @@ public class MatchMaker {
 
                 sessionHandler.removeFromPlaying(to);
                 sessionHandler.removeFromPlaying(from);
+                
                 break;
+            case "DRAW":
+                from = parts[1];
+                to = parts[2];
+                System.out.println("It was a draw: "+message);
+                insertQuery = "INSERT INTO games(won,lost,date) VALUES (?,?,?)";
+
+                try (Connection con = (Connection) DriverManager.getConnection(
+                    "jdbc:mysql://localhost/tictactoedb", "admin", "superduperpwd")) {
+                    PreparedStatement ps = con.prepareStatement(insertQuery);
+
+                    ps.setString(1, from+ "-DRAW");
+                    ps.setString(2, to+ "-DRAW");
+                    DateFormat dateFormat = new SimpleDateFormat("dd-mm-yyyy HH:mm:ss");
+                    Date date = new Date();
+                    System.out.println(dateFormat.format(date)); //2016/11/16 12:08:43
+
+
+                    ps.setString(3, dateFormat.format(date));
+                    ps.executeUpdate();
+                    ps.close();
+                }
+
+                sessionHandler.removeFromPlaying(to);
+                sessionHandler.removeFromPlaying(from);
+            break;
             default:
                 System.out.println("Invalid message");
         }

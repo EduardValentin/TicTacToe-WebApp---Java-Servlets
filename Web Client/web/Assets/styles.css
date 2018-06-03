@@ -177,3 +177,16 @@ form label{
     font-weight: bold;
     margin-bottom: 10px;
 }
+
+#victory-cup,#game-over{
+    margin:30px auto;
+}
+
+.message-popup{
+    color:red;
+    background: #f3f3f3;
+    padding: 30px;
+    width: 70%;
+    margin: 30px auto;
+}
+

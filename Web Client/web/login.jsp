@@ -27,9 +27,8 @@
         %>
         
         <% 
-            /******* Read anny session messages if they exist *******/      
             if(session.getAttribute("message") != null) {
-                out.println(session.getAttribute("message"));
+                out.println("<div class=\"message-popup collumn-flex-container\">" + session.getAttribute("message") + "</div>");
                 session.removeAttribute("message");
             }
         %>

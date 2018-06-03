@@ -30,7 +30,8 @@ public class SessionHandler {
         inQueue.addLast(p);
     }
     public PlayerModel removeFromQueue(){
-        return inQueue.pop();
+        PlayerModel playerToRemove = inQueue.pop();
+        return playerToRemove;
     }
     public boolean playersInQueue(){
         return !inQueue.isEmpty();
@@ -43,6 +44,7 @@ public class SessionHandler {
         playing.put(p2.getUsername(), p2);
     }
     public void removeFromPlaying(String username){
+        PlayerModel playerToRemove = playing.get("username");
         playing.remove(username);
     }
     public void getPlayerWithUsernameInGame(String username){

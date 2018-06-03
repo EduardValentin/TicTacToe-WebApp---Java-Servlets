@@ -34,7 +34,7 @@ public class Register extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         
         HttpSession session = request.getSession(true);
-        
+        String messageForUser = new String("");
         try(Connection dbConnection = dbResource.getConnection()) {
         
             String first_name = request.getParameter("first_name");
@@ -42,18 +42,28 @@ public class Register extends HttpServlet {
             String email = request.getParameter("email");
             String username = request.getParameter("username");
             String password = request.getParameter("password");
+            boolean error = false;
             /**** Perform input validation ****/
             
             if(!EMAIL_REGEX.matcher(email).matches()) {
-                session.setAttribute("email-error-popup","<div class=\"error-popup\"> Email is not valid.</div>");
-                response.sendRedirect("register.jsp");
-            } else if(!first_name.matches("[a-zA-Z]+")) {
-                session.setAttribute("first-name-error-popup","<div class=\"error-popup\"> First name not valid.</div>");
-                response.sendRedirect("register.jsp");
-            } else if(!last_name.matches("[a-zA-Z]+")) {
-                session.setAttribute("last-name-error-popup","<div class=\"error-popup\"> Last name not valid.</div>");
-                response.sendRedirect("register.jsp");
-            } else {
+                messageForUser += "<div class=\"error-popup\"> Email is not valid.</div> </br>";
+                //session.setAttribute("email-error-popup","<div class=\"error-popup\"> Email is not valid.</div>");
+                //response.sendRedirect("register.jsp");
+                error = true;
+            }
+            if(!first_name.matches("[a-zA-Z]+")) {
+                //session.setAttribute("first-name-error-popup","<div class=\"error-popup\"> First name not valid.</div>");
+                messageForUser += "<div class=\"error-popup\"> First name not valid.</div></br>";
+                error=true;
+                //response.sendRedirect("register.jsp");
+            } 
+            if(!last_name.matches("[a-zA-Z]+")) {
+                //session.setAttribute("last-name-error-popup","<div class=\"error-popup\"> Last name not valid.</div>");
+                messageForUser+= "<div class=\"error-popup\"> Last name not valid.</div></br>";
+                error = true;
+                //response.sendRedirect("register.jsp");
+            } 
+            if(error == false){
                 /**** Everything is okay ****/
                 PreparedStatement statement = dbConnection.prepareStatement("INSERT INTO users(first_name,last_name,email,username,password) VALUES(?,?,?,?,?)");
                 statement.setString(1, first_name);
@@ -64,6 +74,10 @@ public class Register extends HttpServlet {
                 statement.execute();
                 session.setAttribute("message","<div class=\"message\">Your account was created with succes, you can log in now.</div>");
                 response.sendRedirect("index.jsp");
+            } else{
+                session.setAttribute("message",messageForUser);
+                response.sendRedirect("register.jsp");
+
             }
         }
     }

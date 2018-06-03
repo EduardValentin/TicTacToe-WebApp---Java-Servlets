@@ -5,7 +5,6 @@
  */
 package servlets;
 
-import data.DatabaseConnection;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -39,6 +38,8 @@ public class Login extends HttpServlet {
         HttpSession session = request.getSession(true);
         String username = request.getParameter("username");
         String password = request.getParameter("password");
+        String messageForUser;
+        System.out.println("Request from: " + username + "  " + password);
         
         try (Connection conn = (Connection) dbResource.getConnection()){
             boolean hasAccount = false;
@@ -48,19 +49,28 @@ public class Login extends HttpServlet {
             ps.setString(2, password);
             ResultSet rs = ps.executeQuery();
             hasAccount = rs.next();
+                if (session.getAttribute("loggedWithUser") != null) {
+                    session.setAttribute("message", "<div class=\"message\">You are already logged in.</div>");
+                    System.out.println("1");
+                    Cookie cookie = new Cookie("loginStatus","logged");
+                    cookie.setMaxAge(60*60*24);
+                    response.addCookie(cookie);
 
-            if (session.getAttribute("loggedWithUser") != null) {
-                session.setAttribute("message", "<div class=\"message\">You are already logged in.</div>");
-                response.sendRedirect("index.jsp"); // return back to caller
-            }
-            else if (hasAccount == true) {
-                session.setAttribute("loggedWithUser", username);
-                session.setAttribute("message", "<div class=\"message\">You logged in.</div>");
-                response.sendRedirect("index.jsp"); // return back to caller
-            } else {
-                session.setAttribute("message", "<div class=\"message\">Username or password are incorect, try again and make sure you have an accout.</div>");
-                response.sendRedirect(request.getHeader("referer")); // return back to caller
-            }
+                    //response.sendRedirect("index.jsp"); // return back to caller
+                }
+                else if (hasAccount == true) {
+                    session.setAttribute("loggedWithUser", username);
+                    session.setAttribute("message", "<div class=\"message\">You logged in.</div>");
+                    System.out.println("2");
+                    Cookie cookie = new Cookie("loginStatus","logged");
+                    cookie.setMaxAge(60*60*24);
+                    response.addCookie(cookie);
+                    //response.sendRedirect("index.jsp"); // return back to caller
+                } else {
+                    System.out.println("3");
+                    session.setAttribute("message", "<div class=\"message\">Username or password are incorect, try again and make sure you have an accout.</div>");
+                    //response.sendRedirect(request.getHeader("referer")); // return back to caller
+                }
         }
 
         //}

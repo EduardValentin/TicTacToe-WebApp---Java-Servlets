@@ -3,8 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package socket;
+package sock;
 
+
+import game.Game;
 import java.net.URI;
 import javax.websocket.ClientEndpoint;
 import javax.websocket.CloseReason;
@@ -15,11 +17,6 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
-/**
- * ChatServer Client
- *
- * @author Jiji_Sasidharan
- */
 @ClientEndpoint
 public class ClientEndpointSocket {
 
@@ -43,6 +40,7 @@ public class ClientEndpointSocket {
     public void onOpen(Session userSession) {
         System.out.println("Opening websocket");
         this.userSession = userSession;
+        this.sendMessage("JOIN|" + Game.getInstance().getPlayerUsername());
     }
 
     /**
@@ -72,6 +70,12 @@ public class ClientEndpointSocket {
         // Examples: JOIN|USERNAME = USERNAME has joined the room and is searching for match
         //           MOVE|FROM|TO|SQUARE_NUMBER = player FROM checked SQUARE_NUMBER and the message is recieved by TO
         //           WON|FROM|TO = FROM won the game and TO lost the game, messages should be displayed to both players
+    
+        String[] messageParts = message.split("|");
+        String action = messageParts[0];
+        
+        int squareNr = Integer.parseInt(messageParts[1]);
+        Game.getInstance().update(squareNr, 0); 
     }
 
     /**

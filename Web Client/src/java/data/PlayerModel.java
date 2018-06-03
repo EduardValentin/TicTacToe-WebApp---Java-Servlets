@@ -9,6 +9,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.websocket.Session;
 
 /**
@@ -33,7 +35,13 @@ public class PlayerModel {
     public void setOpponent(String _opponent) {
         this._opponent = _opponent;
     }
-
+    public void closeConnectionToServer(){
+        try {
+            this._session.close();
+        } catch (IOException ex) {
+            Logger.getLogger(PlayerModel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     public Session getSession() {
         return _session;
     }

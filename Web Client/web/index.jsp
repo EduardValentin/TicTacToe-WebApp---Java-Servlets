@@ -19,15 +19,15 @@
     </head>
     <body>
         <%@ include file="header.jsp" %>
-
+        <img src="Assets/xo.png" id="banner" alt="banner"/>
         <% 
             if(session.getAttribute("message") != null) {
-                out.println(session.getAttribute("message"));
+                 
+                out.println("<div class=\"message-popup collumn-flex-container\">" + session.getAttribute("message") + "</div>");
                 session.removeAttribute("message");
             }
         %>
-        
-        <form action="MatchMaking" method="POST">
+        <form action="ingame.jsp" method="POST">
             <input type="submit" id="play-button" class="custom-button" value="Play"/>
         </form>
         

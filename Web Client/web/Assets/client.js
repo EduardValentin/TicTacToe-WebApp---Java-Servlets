@@ -6,6 +6,7 @@ var turn; // turn = 1 daca e randul playerului sau 0 daca e randul oponentului
 var opponentUsername = null;
 var opponentMark = "-";
 var playerMark = "-";
+var count = 0;
 var table = [
     [-1, -1, -1],
     [-1, -1, -1],
@@ -40,19 +41,6 @@ socket.onmessage = function(event) {
         case "MOVE":
             let squareNr = parseInt(messageParts[1]);
             doOpponentMove(squareNr);
-            if(checkGameState()!= 0){
-                // check if opponent won
-                turn = 1;
-                gameStatusDiv.innerHTML = "Your turn."
-            } else {
-                gameStatusDiv.innerHTML = "GameOver.";
-            }
-            break;
-        case "WAIT":
-            gameStatusDiv.innerHTML = "Searching for opponent...";
-            gameContainerHtml.classList.add("hidden");
-            loadingGifHtml.classList.add("show");
-            console.log(messageParts[1]);
             break;
         case "PLAYING":
             /*** Mesajul primit e de tipul: PLAYING|cu_cine|cine_incepe_primul ***/
@@ -93,6 +81,7 @@ socket.onerror = function(error) {
 
 function doOpponentMove(onSquareNr) {
     if (table[parseInt(onSquareNr / 3)][onSquareNr % 3]) {
+        count++;
         table[parseInt(onSquareNr / 3)][onSquareNr % 3] = 0;
         for (var i = 0; i < squares.length; i++) {
             let data = parseInt(squares[i].getAttribute('data-index'));
@@ -101,26 +90,23 @@ function doOpponentMove(onSquareNr) {
             }
         }
         gameStatusDiv.innerHTML="Your turn.";
-
         turn = 1;
+        checkGameState();
     }
 }
 
 function doPlayerMove() {
     let onSquareNr = this.getAttribute('data-index');
     if (turn == 1 && table[parseInt(onSquareNr / 3)][onSquareNr % 3] == -1) {
-
+        count++;
         table[parseInt(onSquareNr / 3)][onSquareNr % 3] = 1;
+        gameStatusDiv.innerHTML = "Opponent turn"
         let packet = "MOVE|" + playerUsername + "|" + opponentUsername + "|" + onSquareNr;
         //this.innerHTML = window.playerMark;
         this.style.background = "url('" + playerMark + "') no-repeat center center";
-        if(checkGameState() != 1){
-            turn = 0;
-            gameStatusDiv.innerHTML="Opponent turn.";
-            socket.send(packet);
-        } else {
-            gameStatusDiv.innerHTML = "Game Over";
-        }
+        turn = 0;
+        socket.send(packet);
+        checkGameState();
     }
 }
 
@@ -136,11 +122,9 @@ function checkGameState(){
         isSetDiagSec = table[0][2] == 1 && table[1][1] == 1 && table[2][0] == 1;
     
     var isWin = isSetRow1 || isSetRow2 || isSetRow3 || isSetCol1 || isSetCol2 || isSetCol3 || isSetDiagPr || isSetDiagSec;
-    if( isWin == true ){
-        console.log("Player wins.");
+    if( isWin === true ){
         socket.send("WON|"+playerUsername + "|" + opponentUsername);
-        alert("You won. Refresh browser to queue up for a new game.");
-        return 1;   // you won, yay
+        window.location.replace("victory.jsp");
     }
     
         isSetRow1 = table[0][0] == 0 && table[0][1] == 0 && table[0][2] == 0;
@@ -153,11 +137,14 @@ function checkGameState(){
         isSetDiagSec = table[0][2] == 0 && table[1][1] == 0 && table[2][0] == 0;
     
     isWin = isSetRow1 || isSetRow2 || isSetRow3 || isSetCol1 || isSetCol2 || isSetCol3 || isSetDiagPr || isSetDiagSec;
-    if( isWin == true ){
-        console.log("Opponent wins.");
+    if( isWin === true ){
+        //console.log("Opponent wins.");
         socket.send("WON|"+opponentUsername + "|" + playerUsername);
-        alert("Opponent won. Refresh browser to queue up for a new game.");
-        return 0;   // opponent won, sad
+        window.location.replace("gameover.jsp");
     }
-    return 2;   // nothing happened
+    
+    if( count === 9) {
+        socket.send("DRAW|"+playerUsername+"|"+opponentUsername);
+        window.location.replace("draw.jsp");
+    }
 }

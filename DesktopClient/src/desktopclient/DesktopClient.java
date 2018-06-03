@@ -5,6 +5,8 @@
  */
 package desktopclient;
 
+import game.Game;
+
 /**
  *
  * @author Eduard
@@ -16,6 +18,7 @@ public class DesktopClient {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        Game gameInstance = Game.getInstance();
     }
     
 }
