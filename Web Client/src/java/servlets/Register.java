@@ -36,6 +36,7 @@ public class Register extends HttpServlet {
         
         HttpSession session = request.getSession(true);
         String messageForUser = "";
+        String errorCookieMsg = "";
         try(Connection dbConnection = dbResource.getConnection()) {
         
             String first_name = request.getParameter("first_name");
@@ -44,28 +45,34 @@ public class Register extends HttpServlet {
             String username = request.getParameter("username");
             String password = request.getParameter("password");
             boolean error = false;
-            System.out.println(first_name + "|" + last_name + " | " + email + "| " + username + " |" + password);
             /**** Perform input validation ****/
             
             if(!EMAIL_REGEX.matcher(email).matches()) {
                 messageForUser += "<div class=\"error-popup\"> Email is not valid.</div> </br>";
+                errorCookieMsg +="email";
                 error = true;
             }
             if(!first_name.matches("[A-Za-z]+")) {
                 messageForUser += "<div class=\"error-popup\"> First name not valid.</div></br>";
                 error=true;
+                errorCookieMsg+="|fname";
             } 
             if(!last_name.matches("[A-Za-z]+")) {
                 messageForUser+= "<div class=\"error-popup\"> Last name not valid.</div></br>";
                 error = true;
+                errorCookieMsg+="|lname";
+
             } 
             
-            PreparedStatement statement = dbConnection.prepareStatement("select * from users where username="+username);
+            PreparedStatement statement = dbConnection.prepareStatement("select * from users where username = ?");
+            statement.setString(1, username);
             try(ResultSet rs = statement.executeQuery()){
                 if(rs.next()==true){
                     // Username already exists
+                    System.out.println("username exists");
                     messageForUser += "<div class=\"error-popup\"> Username already exists.</div></br>";
                     error = true;
+                    errorCookieMsg += "|user";
                 }
             }
             if(error == false){
@@ -82,26 +89,29 @@ public class Register extends HttpServlet {
                 Cookie cookie = new Cookie("registerStatus","ok");
                 cookie.setMaxAge(60*60*24);
                 response.addCookie(cookie);
-                
                 request.getRequestDispatcher("index.jsp").forward(request, response);
             } else{
                 Cookie cookie = new Cookie("registerStatus","not ok");
                 cookie.setMaxAge(60*60*24);
                 response.addCookie(cookie);
-                
+                Cookie msgCookie = new Cookie("registerErrors",errorCookieMsg);
+                msgCookie.setMaxAge(60*60*24);
+                response.addCookie(msgCookie);
                 session.setAttribute("message",messageForUser);
                 request.getRequestDispatcher("register.jsp").forward(request, response);
 
             }
         } catch (SQLException ex) {
             Cookie cookie = new Cookie("registerStatus","not ok");
-            session.setAttribute("message","<div class=\"message\">There was a problem creating your account, please try again later.</div>");
-            request.getRequestDispatcher("index.jsp").forward(request, response);
             cookie.setMaxAge(60*60*24);
             response.addCookie(cookie);
             
+            session.setAttribute("message","<div class=\"message\">There was a problem creating your account, please try again later.</div>");
+            request.getRequestDispatcher("index.jsp").forward(request, response);
             Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+
     }
 
     

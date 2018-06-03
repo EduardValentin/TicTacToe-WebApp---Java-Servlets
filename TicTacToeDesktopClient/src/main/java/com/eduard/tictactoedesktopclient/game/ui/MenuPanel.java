@@ -205,10 +205,12 @@ public class MenuPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_logoutButtonActionPerformed
 
     private void registerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerButtonActionPerformed
-        // TODO add your handling code here:
-        JPanel parentPanel = (JPanel) this.getParent();
-        CardLayout cl = (CardLayout) parentPanel.getLayout();
-        cl.show(parentPanel, "registerCard");
+        GameController.getInstance().switchToCard("registerCard");
+        
+        // Clear error messages
+        GameController.setLabel("firstNameErrorLabel", "", GameController.getInstance().getRootContainer());
+        GameController.setLabel("lastNameErrorLabel", "", GameController.getInstance().getRootContainer());
+        GameController.setLabel("emailErrorLabel", "", GameController.getInstance().getRootContainer());
     }//GEN-LAST:event_registerButtonActionPerformed
 
 

@@ -6,27 +6,18 @@
 package com.eduard.tictactoedesktopclient.game.ui;
 
 import com.eduard.tictactoedesktopclient.game.GameController;
-import java.awt.CardLayout;
-import java.awt.Component;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 /**
  *
@@ -277,26 +268,7 @@ public class RegisterPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_passwordTextFieldActionPerformed
 
     private void registerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerButtonActionPerformed
-        // TODO add your handling code here:
         GameController gameInstance = GameController.getInstance();
-
-        Pattern EMAIL_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
-        boolean errors = false;
-        if(!firstNameTextField.getText().matches("[A-Za-z]+")){
-            GameController.setLabel("firstNameErrorLabel", "First name not valid.", gameInstance.getRootContainer());
-            errors = true;
-        } 
-        if(!lastNameTextField.getText().matches("[A-Za-z]+")){
-            GameController.setLabel("lastNameErrorLabel", "Last name not valid.", gameInstance.getRootContainer());
-            errors = true;
-        }
-        
-        if(!EMAIL_REGEX.matcher(emailTextField.getText()).matches()) {
-            GameController.setLabel("emailErrorLabel", "Email not valid.", gameInstance.getRootContainer());
-            errors = true;
-        }
-        if(errors == false) {
-            
         URL servletURL;
         try {
             String urlParameters = "first_name="+URLEncoder.encode(firstNameTextField.getText(), "UTF-8")
@@ -319,19 +291,38 @@ public class RegisterPanel extends javax.swing.JPanel {
                 if("Set-Cookie".equalsIgnoreCase(headerFieldKey)){
                     List<String> headerFieldValue = headerFields.get(headerFieldKey);
                     headerFieldValue.forEach((String s) -> {
-                        String[] parts = s.split("=");
                         System.out.println(s);
-                        System.out.println(parts[0]);
-                        System.out.println(parts[1]);
+                        String[] parts = s.split("=");
                         if(parts[0].equals("registerStatus")) {
                             
                             if(parts[1].substring(0, 2).equals("ok")){
                                 gameInstance.switchToCard("menuCard");
                                 GameController.setLabel("messageLabel", "You successfully registered.", gameInstance.getRootContainer());
-                            }else{
-                                GameController.setLabel("messageLabel", "Something went wrong.", gameInstance.getRootContainer());
                             }
                         }
+                        if(parts[0].equals("registerErrors")){
+                            int limit = parts[1].indexOf(";");
+                            String info = parts[1].substring(0, limit);
+                            String[] errors = info.split("[\\|]");
+                            for(String e : errors){
+                                switch(e){
+                                    case "fname":
+                                        firstNameErrorLabel.setText("First name not valid.");
+                                        break;
+                                    case "lname":
+                                        lastNameErrorLabel.setText("Last name not valid.");
+                                        break;
+                                    case "email":
+                                        emailErrorLabel.setText("Email not valid.");
+                                        break;
+                                    case "user":
+                                        usernameErrorLabel.setText("Username already taken.");
+                                        break;
+                                }
+                            }
+                            
+                        }
+                        
                     });
                 }
             }
@@ -341,16 +332,6 @@ public class RegisterPanel extends javax.swing.JPanel {
         } catch (IOException ex) {
             Logger.getLogger(LoginPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        
-        
-                     
-            // Clear error messages
-            GameController.setLabel("firstNameErrorLabel", "", gameInstance.getRootContainer());
-            GameController.setLabel("lastNameErrorLabel", "", gameInstance.getRootContainer());
-            GameController.setLabel("emailErrorLabel", "", gameInstance.getRootContainer());
-        } 
-
     }//GEN-LAST:event_registerButtonActionPerformed
 
     private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
