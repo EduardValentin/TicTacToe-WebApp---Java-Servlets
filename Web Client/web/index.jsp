@@ -19,7 +19,7 @@
     </head>
     <body>
         <%@ include file="header.jsp" %>
-        <img src="Assets/xo.png" id="banner" alt="banner"/>
+        <img src="Assets/xo.jpg" id="banner" alt="banner"/>
         <% 
             if(session.getAttribute("message") != null) {
                  

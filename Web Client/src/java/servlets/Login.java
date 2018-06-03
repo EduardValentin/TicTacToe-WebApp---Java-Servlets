@@ -39,7 +39,7 @@ public class Login extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String messageForUser;
-        System.out.println("Request from: " + username + "  " + password);
+        //System.out.println("Request from: " + username + "  " + password);
         
         try (Connection conn = (Connection) dbResource.getConnection()){
             boolean hasAccount = false;
@@ -51,25 +51,27 @@ public class Login extends HttpServlet {
             hasAccount = rs.next();
                 if (session.getAttribute("loggedWithUser") != null) {
                     session.setAttribute("message", "<div class=\"message\">You are already logged in.</div>");
-                    System.out.println("1");
                     Cookie cookie = new Cookie("loginStatus","logged");
                     cookie.setMaxAge(60*60*24);
+                    cookie.setPath("/");
                     response.addCookie(cookie);
-
-                    //response.sendRedirect("index.jsp"); // return back to caller
+                    request.getRequestDispatcher("index.jsp").forward(request, response);
                 }
                 else if (hasAccount == true) {
                     session.setAttribute("loggedWithUser", username);
                     session.setAttribute("message", "<div class=\"message\">You logged in.</div>");
-                    System.out.println("2");
                     Cookie cookie = new Cookie("loginStatus","logged");
                     cookie.setMaxAge(60*60*24);
                     response.addCookie(cookie);
-                    //response.sendRedirect("index.jsp"); // return back to caller
+                    cookie.setPath("/");
+                    request.getRequestDispatcher("index.jsp").forward(request, response);
                 } else {
-                    System.out.println("3");
+                    Cookie cookie = new Cookie("loginStatus","not logged");
+                    cookie.setMaxAge(60*60*24);
+                    response.addCookie(cookie);
+                    cookie.setPath("/");
                     session.setAttribute("message", "<div class=\"message\">Username or password are incorect, try again and make sure you have an accout.</div>");
-                    //response.sendRedirect(request.getHeader("referer")); // return back to caller
+                    request.getRequestDispatcher("login.jsp").forward(request, response);
                 }
         }
 

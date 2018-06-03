@@ -10,12 +10,14 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.annotation.Resource;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,11 +32,10 @@ public class Register extends HttpServlet {
     @Resource(name = "jdbc/TicTacToeDb")
     private DataSource dbResource;
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, SQLException {
-        response.setContentType("text/html;charset=UTF-8");
+            throws ServletException, IOException {
         
         HttpSession session = request.getSession(true);
-        String messageForUser = new String("");
+        String messageForUser = "";
         try(Connection dbConnection = dbResource.getConnection()) {
         
             String first_name = request.getParameter("first_name");
@@ -43,29 +44,33 @@ public class Register extends HttpServlet {
             String username = request.getParameter("username");
             String password = request.getParameter("password");
             boolean error = false;
+            System.out.println(first_name + "|" + last_name + " | " + email + "| " + username + " |" + password);
             /**** Perform input validation ****/
             
             if(!EMAIL_REGEX.matcher(email).matches()) {
                 messageForUser += "<div class=\"error-popup\"> Email is not valid.</div> </br>";
-                //session.setAttribute("email-error-popup","<div class=\"error-popup\"> Email is not valid.</div>");
-                //response.sendRedirect("register.jsp");
                 error = true;
             }
-            if(!first_name.matches("[a-zA-Z]+")) {
-                //session.setAttribute("first-name-error-popup","<div class=\"error-popup\"> First name not valid.</div>");
+            if(!first_name.matches("[A-Za-z]+")) {
                 messageForUser += "<div class=\"error-popup\"> First name not valid.</div></br>";
                 error=true;
-                //response.sendRedirect("register.jsp");
             } 
-            if(!last_name.matches("[a-zA-Z]+")) {
-                //session.setAttribute("last-name-error-popup","<div class=\"error-popup\"> Last name not valid.</div>");
+            if(!last_name.matches("[A-Za-z]+")) {
                 messageForUser+= "<div class=\"error-popup\"> Last name not valid.</div></br>";
                 error = true;
-                //response.sendRedirect("register.jsp");
             } 
+            
+            PreparedStatement statement = dbConnection.prepareStatement("select * from users where username="+username);
+            try(ResultSet rs = statement.executeQuery()){
+                if(rs.next()==true){
+                    // Username already exists
+                    messageForUser += "<div class=\"error-popup\"> Username already exists.</div></br>";
+                    error = true;
+                }
+            }
             if(error == false){
                 /**** Everything is okay ****/
-                PreparedStatement statement = dbConnection.prepareStatement("INSERT INTO users(first_name,last_name,email,username,password) VALUES(?,?,?,?,?)");
+                statement = dbConnection.prepareStatement("INSERT INTO users(first_name,last_name,email,username,password) VALUES(?,?,?,?,?)");
                 statement.setString(1, first_name);
                 statement.setString(2, last_name);
                 statement.setString(3, email);
@@ -73,12 +78,29 @@ public class Register extends HttpServlet {
                 statement.setString(5, password);
                 statement.execute();
                 session.setAttribute("message","<div class=\"message\">Your account was created with succes, you can log in now.</div>");
-                response.sendRedirect("index.jsp");
+                
+                Cookie cookie = new Cookie("registerStatus","ok");
+                cookie.setMaxAge(60*60*24);
+                response.addCookie(cookie);
+                
+                request.getRequestDispatcher("index.jsp").forward(request, response);
             } else{
+                Cookie cookie = new Cookie("registerStatus","not ok");
+                cookie.setMaxAge(60*60*24);
+                response.addCookie(cookie);
+                
                 session.setAttribute("message",messageForUser);
-                response.sendRedirect("register.jsp");
+                request.getRequestDispatcher("register.jsp").forward(request, response);
 
             }
+        } catch (SQLException ex) {
+            Cookie cookie = new Cookie("registerStatus","not ok");
+            session.setAttribute("message","<div class=\"message\">There was a problem creating your account, please try again later.</div>");
+            request.getRequestDispatcher("index.jsp").forward(request, response);
+            cookie.setMaxAge(60*60*24);
+            response.addCookie(cookie);
+            
+            Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -86,28 +108,16 @@ public class Register extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try {
+       
             processRequest(request, response);
-        } catch (SQLException ex) {
-            Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
     }
 
     
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try {
             processRequest(request, response);
-        } catch (SQLException ex) {
-            Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
-
-   
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
 
 }

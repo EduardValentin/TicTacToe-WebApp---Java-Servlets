@@ -85,10 +85,8 @@ public class MatchMaker {
                 }
                 break;
             case "MOVE":
-                from = parts[1];
-                String to = parts[2];
-                String squareNr = parts[3];
-                System.out.println("From:" + from + " | To: " + to + " | Move: " + squareNr);
+                String to = parts[1];
+                String squareNr = parts[2];
                 sessionHandler.sendMessageTo(to, "MOVE|" + squareNr);
                 break;
             case "WON":

@@ -6,14 +6,11 @@
 package com.eduard.tictactoedesktopclient.game.socket;
 
 import com.eduard.tictactoedesktopclient.game.GameController;
-import java.awt.CardLayout;
 import java.awt.Component;
-import java.awt.Container;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
-import javax.swing.JPanel;
 import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
 import javax.websocket.MessageHandler;
@@ -31,28 +28,23 @@ public class ClientEndpointSocket extends Endpoint {
     public void onOpen(Session sn, EndpointConfig ec) {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         this.session = sn;
+        
+        // Add a message handler that handles the messages recieved from the server
         this.session.addMessageHandler(new MessageHandler.Whole<String>(){
             @Override
             public void onMessage(String message) {
                 GameController gameController = GameController.getInstance();
-                // TODO: Handle recieved messages here
-                System.out.println("Recieved: " + message + " from server");
                 String[] messageParts = message.split("[| ]+");
                 String messageType = messageParts[0];
-                System.out.println(messageType);
                 switch(messageType){
                     case "PLAYING":
                         String opponentUname = messageParts[1];
                         String firstPlayer = messageParts[2];
-                        // TODO: remove waiting gif
+                        
                         gameController.setOpponentUsername(opponentUname);
-                        
-                        //display the ingame panel
-                        JPanel rootPanel = (JPanel) gameController.getRootContainer();
-                        CardLayout cl = (CardLayout) rootPanel.getLayout();
-                        cl.show(rootPanel, "gameplayCard");
-                        System.out.println(rootPanel.getAccessibleContext().getAccessibleName());
-                        
+                        GameController.setLabel("versusLabel", "Versus: " + gameController.getOpponentUsername(), gameController.getRootContainer());
+                        gameController.switchToCard("gameplayCard");
+                        //Decide who's first
                         if(firstPlayer.equals(gameController.getMyUsername())){
                             gameController.setPlayerTurn(true);
                             gameController.setMyIcon(gameController.X_ICON_LOCATION);
@@ -66,7 +58,7 @@ public class ClientEndpointSocket extends Endpoint {
                     break;
                     
                     case "MOVE":
-                        // MOVE|from|to|square_nr
+                        // MOVE|square_nr
                         int squareNr = Integer.parseInt(messageParts[1]);
                         gameController.update(squareNr, 0);
                         gameController.setPlayerTurn(true);
@@ -79,6 +71,7 @@ public class ClientEndpointSocket extends Endpoint {
         
         });
         
+        // Send a join message to server to put us in queue for playing
         try {
             this.session.getBasicRemote().sendText("JOIN|" + GameController.getInstance().getMyUsername());
         } catch (IOException ex) {
@@ -90,7 +83,7 @@ public class ClientEndpointSocket extends Endpoint {
         try {
             this.session.getBasicRemote().sendText(message);
         } catch (IOException ex) {
-            Logger.getLogger(TestEndpoint.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ClientEndpointSocket.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

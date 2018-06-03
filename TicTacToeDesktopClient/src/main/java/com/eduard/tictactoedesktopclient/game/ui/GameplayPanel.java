@@ -36,7 +36,9 @@ public class GameplayPanel extends javax.swing.JPanel {
 
         userDataPanel = new javax.swing.JPanel();
         turnLabel = new javax.swing.JLabel();
+        playersPanel = new javax.swing.JPanel();
         usernameLabel = new javax.swing.JLabel();
+        versusLabel = new javax.swing.JLabel();
         tablePanel = new javax.swing.JPanel();
         square0 = new javax.swing.JButton();
         square1 = new javax.swing.JButton();
@@ -62,13 +64,26 @@ public class GameplayPanel extends javax.swing.JPanel {
         userDataPanel.add(turnLabel);
         turnLabel.getAccessibleContext().setAccessibleName("turnLabel");
 
+        playersPanel.setBackground(new java.awt.Color(245, 245, 245));
+        playersPanel.setLayout(new java.awt.GridLayout(2, 0));
+
         usernameLabel.setBackground(new java.awt.Color(255, 255, 255));
         usernameLabel.setFont(new java.awt.Font("Proxima Nova Alt Rg", 1, 18)); // NOI18N
         usernameLabel.setForeground(new java.awt.Color(71, 71, 71));
         usernameLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         usernameLabel.setText("Username:");
-        userDataPanel.add(usernameLabel);
+        playersPanel.add(usernameLabel);
         usernameLabel.getAccessibleContext().setAccessibleName("usernameLabel");
+
+        versusLabel.setBackground(new java.awt.Color(255, 255, 255));
+        versusLabel.setFont(new java.awt.Font("Proxima Nova Alt Rg", 1, 18)); // NOI18N
+        versusLabel.setForeground(new java.awt.Color(71, 71, 71));
+        versusLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        versusLabel.setText("Versus:");
+        playersPanel.add(versusLabel);
+        versusLabel.getAccessibleContext().setAccessibleName("versusLabel");
+
+        userDataPanel.add(playersPanel);
 
         add(userDataPanel, java.awt.BorderLayout.CENTER);
 
@@ -206,7 +221,7 @@ public class GameplayPanel extends javax.swing.JPanel {
         if(gameInstance.getButtonsMap()[squareNr / 3][squareNr % 3] == -1 && gameInstance.isPlayerTurn()) {
             source.setIcon(gameInstance.getMyIcon());
             try {
-                gameInstance.sendMessageToServer("MOVE|" + gameInstance.getMyUsername() + "|" + gameInstance.getOpponentUsername()+ "|" + squareNr);
+                gameInstance.sendMessageToServer("MOVE|" + gameInstance.getOpponentUsername()+ "|" + squareNr);
             } catch (IOException ex) {
                 Logger.getLogger(GameplayPanel.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -217,6 +232,7 @@ public class GameplayPanel extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel playersPanel;
     private javax.swing.JButton sqare8;
     private javax.swing.JButton square0;
     private javax.swing.JButton square1;
@@ -230,5 +246,6 @@ public class GameplayPanel extends javax.swing.JPanel {
     private javax.swing.JLabel turnLabel;
     private javax.swing.JPanel userDataPanel;
     private javax.swing.JLabel usernameLabel;
+    private javax.swing.JLabel versusLabel;
     // End of variables declaration//GEN-END:variables
 }

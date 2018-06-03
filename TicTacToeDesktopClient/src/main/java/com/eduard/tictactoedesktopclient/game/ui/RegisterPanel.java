@@ -8,10 +8,20 @@ package com.eduard.tictactoedesktopclient.game.ui;
 import com.eduard.tictactoedesktopclient.game.GameController;
 import java.awt.CardLayout;
 import java.awt.Component;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -60,6 +70,7 @@ public class RegisterPanel extends javax.swing.JPanel {
         lastNameErrorLabel = new javax.swing.JLabel();
         emailErrorLabel = new javax.swing.JLabel();
         usernameErrorLabel = new javax.swing.JLabel();
+        messageLabel = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(245, 245, 245));
         setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.PAGE_AXIS));
@@ -117,6 +128,12 @@ public class RegisterPanel extends javax.swing.JPanel {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
         registerFormPanel.add(lastNameLabel, gridBagConstraints);
+
+        lastNameTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                lastNameTextFieldActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -205,11 +222,14 @@ public class RegisterPanel extends javax.swing.JPanel {
         usernameErrorLabel.setFont(new java.awt.Font("Proxima Nova Alt Cn Lt", 1, 14)); // NOI18N
         usernameErrorLabel.setForeground(new java.awt.Color(255, 0, 0));
 
+        messageLabel.setFont(new java.awt.Font("Proxima Nova Alt Cn Lt", 1, 14)); // NOI18N
+        messageLabel.setForeground(new java.awt.Color(255, 0, 0));
+
         javax.swing.GroupLayout messagePanelLayout = new javax.swing.GroupLayout(messagePanel);
         messagePanel.setLayout(messagePanelLayout);
         messagePanelLayout.setHorizontalGroup(
             messagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 626, Short.MAX_VALUE)
             .addGroup(messagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(messagePanelLayout.createSequentialGroup()
                     .addGap(0, 313, Short.MAX_VALUE)
@@ -217,12 +237,13 @@ public class RegisterPanel extends javax.swing.JPanel {
                         .addComponent(firstNameErrorLabel)
                         .addComponent(lastNameErrorLabel)
                         .addComponent(emailErrorLabel)
-                        .addComponent(usernameErrorLabel))
+                        .addComponent(usernameErrorLabel)
+                        .addComponent(messageLabel))
                     .addGap(0, 313, Short.MAX_VALUE)))
         );
         messagePanelLayout.setVerticalGroup(
             messagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 16, Short.MAX_VALUE)
             .addGroup(messagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(messagePanelLayout.createSequentialGroup()
                     .addGap(0, 0, Short.MAX_VALUE)
@@ -233,6 +254,8 @@ public class RegisterPanel extends javax.swing.JPanel {
                     .addComponent(emailErrorLabel)
                     .addGap(0, 0, Short.MAX_VALUE)
                     .addComponent(usernameErrorLabel)
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(messageLabel)
                     .addGap(0, 0, Short.MAX_VALUE)))
         );
 
@@ -240,6 +263,7 @@ public class RegisterPanel extends javax.swing.JPanel {
         lastNameErrorLabel.getAccessibleContext().setAccessibleName("lastNameErrorLabel");
         emailErrorLabel.getAccessibleContext().setAccessibleName("emailErrorLabel");
         usernameErrorLabel.getAccessibleContext().setAccessibleName("usernameErrorLabel");
+        messageLabel.getAccessibleContext().setAccessibleName("messageLabel");
 
         add(messagePanel);
     }// </editor-fold>//GEN-END:initComponents
@@ -254,8 +278,9 @@ public class RegisterPanel extends javax.swing.JPanel {
 
     private void registerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerButtonActionPerformed
         // TODO add your handling code here:
-        Pattern EMAIL_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
         GameController gameInstance = GameController.getInstance();
+
+        Pattern EMAIL_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
         boolean errors = false;
         if(!firstNameTextField.getText().matches("[A-Za-z]+")){
             GameController.setLabel("firstNameErrorLabel", "First name not valid.", gameInstance.getRootContainer());
@@ -272,62 +297,59 @@ public class RegisterPanel extends javax.swing.JPanel {
         }
         if(errors == false) {
             
-            PreparedStatement ps = null;
-
-            try(Connection con = DriverManager.getConnection("jdbc:mysql://localhost/tictactoedb", "admin", "superduperpwd")) {
-
-                ps = con.prepareStatement("INSERT INTO users(first_name,last_name,email,username,password) VALUES(?,?,?,?,?)");
-                ps.setString(1, firstNameTextField.getText());
-                ps.setString(2, lastNameTextField.getText());
-                ps.setString(3, emailTextField.getText());
-                ps.setString(4, usernameTextField.getText());
-                ps.setString(5, passwordTextField.getText());
-                ps.execute();
-
-                JPanel parentPanel = (JPanel) this.getParent();
-                CardLayout cl = (CardLayout) parentPanel.getLayout();
-                cl.show(parentPanel, "menuCard");
-                // change username in menu panel
-                /*Component[] containers = parentPanel.getComponents();
-                for (Component comp: containers) {
-                    JPanel cPanel = (JPanel) comp;
-                    System.out.println(cPanel.getAccessibleContext().getAccessibleName());
-
-                    if (cPanel.getAccessibleContext().getAccessibleName().equals("menuPanel")) {
-                        // found it, now change textfield
-                        Component[] loginPanelComponents = cPanel.getComponents();
-                        for (Component menuComponent: loginPanelComponents) {
-                            if (menuComponent instanceof JLabel) {
-                                JLabel label = ((JLabel) menuComponent);
-                                if(label.getAccessibleContext().getAccessibleName().equals("messageLabel"))
-                                    label.setText("Your account was created. You can log in now.");
+        URL servletURL;
+        try {
+            String urlParameters = "first_name="+URLEncoder.encode(firstNameTextField.getText(), "UTF-8")
+                            + "&last_name=" + URLEncoder.encode(lastNameTextField.getText(),"UTF-8") 
+                            + "&email=" + URLEncoder.encode(emailTextField.getText(),"UTF-8")
+                            + "&username=" + URLEncoder.encode(usernameTextField.getText(), "UTF-8")
+                            + "&password=" + URLEncoder.encode(passwordTextField.getText(),"UTF-8");
+                    
+            servletURL = new URL("http://localhost:9999/TicTacToeWeb/Register?"+urlParameters);
+            HttpURLConnection servletConnection = (HttpURLConnection) servletURL.openConnection();
+            servletConnection.setRequestMethod("POST");
+           
+            Map<String,List<String>> headerFields = servletConnection.getHeaderFields();
+            Set<String> headerFieldsSet = headerFields.keySet();
+            Iterator<String> headerFieldsIter = headerFieldsSet.iterator();
+            
+            while(headerFieldsIter.hasNext()){
+                String headerFieldKey = headerFieldsIter.next();
+                
+                if("Set-Cookie".equalsIgnoreCase(headerFieldKey)){
+                    List<String> headerFieldValue = headerFields.get(headerFieldKey);
+                    headerFieldValue.forEach((String s) -> {
+                        String[] parts = s.split("=");
+                        System.out.println(s);
+                        System.out.println(parts[0]);
+                        System.out.println(parts[1]);
+                        if(parts[0].equals("registerStatus")) {
+                            
+                            if(parts[1].substring(0, 2).equals("ok")){
+                                gameInstance.switchToCard("menuCard");
+                                GameController.setLabel("messageLabel", "You successfully registered.", gameInstance.getRootContainer());
+                            }else{
+                                GameController.setLabel("messageLabel", "Something went wrong.", gameInstance.getRootContainer());
                             }
                         }
-
-                        break;
-                    }
-                
-
-                }*/
-            } catch(SQLException e){
-                System.err.println("SQLException in RegisterPanel.java: ");
-                e.printStackTrace();
-            } finally{
-                try {
-                    if(ps != null)
-                        ps.close();
-                    
-                } catch (SQLException ex) {
-                    Logger.getLogger(RegisterPanel.class.getName()).log(Level.SEVERE, null, ex);
+                    });
                 }
             }
+           
+        } catch (MalformedURLException ex ) {
+            Logger.getLogger(LoginPanel.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(LoginPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
+        
+                     
             // Clear error messages
             GameController.setLabel("firstNameErrorLabel", "", gameInstance.getRootContainer());
             GameController.setLabel("lastNameErrorLabel", "", gameInstance.getRootContainer());
             GameController.setLabel("emailErrorLabel", "", gameInstance.getRootContainer());
-        } else{
-            System.out.println("errrrooorssss");
-        }
+        } 
 
     }//GEN-LAST:event_registerButtonActionPerformed
 
@@ -336,6 +358,10 @@ public class RegisterPanel extends javax.swing.JPanel {
         GameController gameInstance = GameController.getInstance();
         gameInstance.switchToCard("menuCard");
     }//GEN-LAST:event_backButtonActionPerformed
+
+    private void lastNameTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lastNameTextFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_lastNameTextFieldActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -350,6 +376,7 @@ public class RegisterPanel extends javax.swing.JPanel {
     private javax.swing.JLabel lastNameErrorLabel;
     private javax.swing.JLabel lastNameLabel;
     private javax.swing.JTextField lastNameTextField;
+    private javax.swing.JLabel messageLabel;
     private javax.swing.JPanel messagePanel;
     private javax.swing.JLabel passwordLabel;
     private javax.swing.JPasswordField passwordTextField;

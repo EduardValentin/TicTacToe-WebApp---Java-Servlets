@@ -69,7 +69,7 @@ public class GameController {
         for(Component c : comps){
             String compName = c.getAccessibleContext().getAccessibleName();
             if(compName != null)
-            if( compName != null && compName.equals("windowContentPanel")){
+            if( compName != null && compName.equals("windowContentPanel")==true){
                 found = (Container) c;
             }
         }
@@ -122,7 +122,6 @@ public class GameController {
            buttonsMap[0][2] == 0 && buttonsMap[1][2] == 0 && buttonsMap[2][2] == 0 ||
            buttonsMap[0][0] == 0 && buttonsMap[1][1] == 0 && buttonsMap[2][2] == 0 ||
            buttonsMap[0][2] == 0 && buttonsMap[1][1] == 0 && buttonsMap[2][0] == 0 ){
-            endpoint.sendMessage("WON|" + opponentUsername + "|" + myUsername);
             // I lost
             this.switchToCard("gameOverCard");
         }

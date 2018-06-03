@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JLabel;
@@ -186,19 +187,12 @@ public class LoginPanel extends javax.swing.JPanel {
         boolean hasAccount = false;
         URL servletURL;
         String urlParameters;
-        
-        System.out.println("in login pane;");
-
         try {
             urlParameters = "username="+URLEncoder.encode(uname, "UTF-8") + "&password=" + URLEncoder.encode(pwd,"UTF-8");
-            System.out.println(urlParameters);
             servletURL = new URL("http://localhost:9999/TicTacToeWeb/Login?"+urlParameters);
             HttpURLConnection servletConnection = (HttpURLConnection) servletURL.openConnection();
-            servletConnection.setRequestMethod("GET");
-            //servletConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            //servletConnection.setRequestProperty("Content-Length", "" + Integer.toString(urlParameters.getBytes().length));
-            //servletConnection.setRequestProperty("Content-Language", "en-US");
-            System.out.println(servletConnection.getResponseMessage());
+            servletConnection.setRequestMethod("POST");
+           
             Map<String,List<String>> headerFields = servletConnection.getHeaderFields();
             Set<String> headerFieldsSet = headerFields.keySet();
             Iterator<String> headerFieldsIter = headerFieldsSet.iterator();
@@ -206,26 +200,25 @@ public class LoginPanel extends javax.swing.JPanel {
                 String headerFieldKey = headerFieldsIter.next();
                 if("Set-Cookie".equalsIgnoreCase(headerFieldKey)){
                     List<String> headerFieldValue = headerFields.get(headerFieldKey);
-                    headerFieldValue.forEach(System.out::println);
+                    headerFieldValue.forEach((String s) -> {
+                        String[] parts = s.split("=");
+                        if (parts[0].equals("loginStatus")) {
+                            if (parts[1].substring(0, 6).equals("logged")) {
+                                GameController gameInstance1 = GameController.getInstance();
+                                gameInstance1.logUserIn();
+                                gameInstance1.switchToCard("menuCard");
+                                gameInstance1.setMyUsername(uname);
+                                GameController.setLabel("messageLabel", "You logged in.", gameInstance1.getRootContainer());
+                                GameController.setLabel("usernameLabel", "Username: " + uname, gameInstance1.getRootContainer());
+                                
+                            } else {
+                                GameController.setLabel("messageLabel", "Username or password incorect.", gameInstance.getRootContainer());
+                            }
+                        }
+                    });
                 }
             }
-            /*servletConnection.setDoInput(true);
-            servletConnection.setDoOutput(true);
-            servletConnection.setUseCaches(false);
-            InputStream in;
-            
-            try (DataOutputStream output = new DataOutputStream(servletConnection.getOutputStream())) {
-                in = servletConnection.getInputStream();
-                output.writeBytes(urlParameters);
-                output.flush();
-            }
-            
-            try (BufferedReader bfreader = new BufferedReader(new InputStreamReader(in))) {
-                String line;
-                while((line = bfreader.readLine())!= null){
-                    System.out.println(line);
-                }
-            }*/
+           
         } catch (MalformedURLException ex ) {
             Logger.getLogger(LoginPanel.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {

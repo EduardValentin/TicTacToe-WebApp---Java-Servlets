@@ -101,7 +101,7 @@ function doPlayerMove() {
         count++;
         table[parseInt(onSquareNr / 3)][onSquareNr % 3] = 1;
         gameStatusDiv.innerHTML = "Opponent turn"
-        let packet = "MOVE|" + playerUsername + "|" + opponentUsername + "|" + onSquareNr;
+        let packet = "MOVE|" + opponentUsername + "|" + onSquareNr;
         //this.innerHTML = window.playerMark;
         this.style.background = "url('" + playerMark + "') no-repeat center center";
         turn = 0;
@@ -138,8 +138,6 @@ function checkGameState(){
     
     isWin = isSetRow1 || isSetRow2 || isSetRow3 || isSetCol1 || isSetCol2 || isSetCol3 || isSetDiagPr || isSetDiagSec;
     if( isWin === true ){
-        //console.log("Opponent wins.");
-        socket.send("WON|"+opponentUsername + "|" + playerUsername);
         window.location.replace("gameover.jsp");
     }
     
