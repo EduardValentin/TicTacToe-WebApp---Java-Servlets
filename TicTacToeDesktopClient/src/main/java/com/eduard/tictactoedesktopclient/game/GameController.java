@@ -54,12 +54,7 @@ public class GameController {
     public final String O_ICON_LOCATION = "C:\\Users\\Eduard\\Documents\\Developer\\TicTacToe-WebApp---Java-Servlets\\TicTacToeDesktopClient\\src\\main\\resources\\images\\O.png";
 
     private GameController(){
-        
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            System.out.println("Class not found " + e);
-        }
+       
         window = new GameWindowFrame();
         window.setVisible(true);
         this.container = ContainerProvider.getWebSocketContainer();
@@ -186,11 +181,17 @@ public class GameController {
     public int[][] getButtonsMap() {
         return buttonsMap;
     }
-    
-    
-    public boolean isIsPlayerTurn() {
-        return isPlayerTurn;
+
+    public Session getConnection() {
+        return connection;
     }
+
+    public void setConnection(Session connection) {
+        this.connection = connection;
+    }
+    
+    
+
 
     public void setPlayerTurn(boolean val){
         this.isPlayerTurn = val;

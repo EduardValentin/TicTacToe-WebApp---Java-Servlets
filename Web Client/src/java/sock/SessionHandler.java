@@ -47,6 +47,16 @@ public class SessionHandler {
         PlayerModel playerToRemove = playing.get("username");
         playing.remove(username);
     }
+    public void removeFromQueue(String username){
+        int i = 0;
+        for(PlayerModel p:inQueue){
+            if(p.getUsername().equals(username)){
+                inQueue.remove(i);
+            } else{
+                i++;
+            }
+        }
+    }
     public void getPlayerWithUsernameInGame(String username){
         playing.get(username);
     }

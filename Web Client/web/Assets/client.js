@@ -18,6 +18,10 @@ var playingWithDiv = document.getElementById("playing-with");
 var gameStatusDiv = document.getElementById("game-status");
 var goFirstDiv = document.getElementById("go-first");
 
+window.onbeforeunload = function(){
+  socket.send("CLOSE|" + playerUsername);
+};
+
 squares = document.getElementsByClassName('square');
 for (var i = 0; i < squares.length; i++) {
     squares[i].addEventListener("click", doPlayerMove, true);
@@ -31,6 +35,10 @@ gameContainerHtml = document.getElementById("game-container");
 socket.onopen = function() {
     console.log("Socket open - Connection ok");
     socket.send("JOIN|" + playerUsername);
+};
+
+socket.onclose = function(){
+    socket.send("CLOSE|"+playerUsername);
 };
 
 socket.onmessage = function(event) {

@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import javax.annotation.Resource;
 import javax.websocket.EndpointConfig;
@@ -49,20 +50,21 @@ public class MatchMaker {
 
     @OnClose
     public void onClose() {
-        System.out.println("Close Connection ...");
+        
     }
 
     @OnMessage
     public void onMessage(String message, Session session) throws IOException, SQLException {
         System.out.println("Message from the client: " + message);
         String[] parts = message.split("\\|");
+
         String typeOfOperation = parts[0];
         String from = null;
         System.out.println(typeOfOperation);
         switch (typeOfOperation) {
             case "JOIN":
                 String playerUsername = parts[1];
-                System.out.println(playerUsername + " yayaya");
+                System.out.println(playerUsername + " joined");
                 PlayerModel newPlayer = new PlayerModel(playerUsername, session);
                 if (sessionHandler.playersInQueue() == false) {
                     // Nu sunt jucatori care asteapta in coada ,deci nu are cu cine sa joace
@@ -116,6 +118,10 @@ public class MatchMaker {
                 sessionHandler.removeFromPlaying(to);
                 sessionHandler.removeFromPlaying(from);
                 
+                break;
+            case "CLOSE":
+                System.out.println(Arrays.toString(parts));
+                sessionHandler.removeFromQueue(parts[1]);
                 break;
             case "DRAW":
                 from = parts[1];

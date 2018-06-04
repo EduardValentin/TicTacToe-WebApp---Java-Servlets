@@ -14,6 +14,7 @@
         <title>Super TicTacToe - Draw</title>
     </head>
     <body>
+        <%@ include file="header.jsp" %>
         <div id="gameover-content-wrapper" class="collumn-flex-container">
             <h1>Draw! Try again!</h1>
             <img src="Assets/drawGame.png" id="draw-img" alt="drawr-img" />

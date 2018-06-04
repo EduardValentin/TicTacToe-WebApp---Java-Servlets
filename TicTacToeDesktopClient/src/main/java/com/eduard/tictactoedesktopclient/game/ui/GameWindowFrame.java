@@ -5,7 +5,11 @@
  */
 package com.eduard.tictactoedesktopclient.game.ui;
 
+import com.eduard.tictactoedesktopclient.game.GameController;
 import java.awt.CardLayout;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -43,6 +47,14 @@ public class GameWindowFrame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Super TicTacToe");
         setMinimumSize(new java.awt.Dimension(500, 500));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                onWindowClose(evt);
+            }
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                onWindowClose(evt);
+            }
+        });
 
         windowContentPanel.setName("Super TicTacToe "); // NOI18N
         windowContentPanel.setLayout(new java.awt.CardLayout());
@@ -74,6 +86,16 @@ public class GameWindowFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         
     }//GEN-LAST:event_menuPanelMouseClicked
+
+    private void onWindowClose(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_onWindowClose
+        // TODO add your handling code here:
+        GameController gameInstance = GameController.getInstance();
+        try {
+            gameInstance.sendMessageToServer("CLOSE|" + gameInstance.getMyUsername());
+        } catch (IOException ex) {
+            Logger.getLogger(GameWindowFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_onWindowClose
 
    
     // Variables declaration - do not modify//GEN-BEGIN:variables
