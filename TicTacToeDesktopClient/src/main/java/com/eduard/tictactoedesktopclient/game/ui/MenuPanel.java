@@ -211,6 +211,8 @@ public class MenuPanel extends javax.swing.JPanel {
         GameController.setLabel("firstNameErrorLabel", "", GameController.getInstance().getRootContainer());
         GameController.setLabel("lastNameErrorLabel", "", GameController.getInstance().getRootContainer());
         GameController.setLabel("emailErrorLabel", "", GameController.getInstance().getRootContainer());
+        GameController.setLabel("usernameErrorLabel", "", GameController.getInstance().getRootContainer());
+
     }//GEN-LAST:event_registerButtonActionPerformed
 
 

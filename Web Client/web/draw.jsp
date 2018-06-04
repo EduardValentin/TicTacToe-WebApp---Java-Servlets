@@ -16,7 +16,7 @@
     <body>
         <div id="gameover-content-wrapper" class="collumn-flex-container">
             <h1>Draw! Try again!</h1>
-            <img src="Assets/draw.png" id="draw-img" alt="drawr-img" />
+            <img src="Assets/drawGame.png" id="draw-img" alt="drawr-img" />
             <form action="ingame.jsp" method="POST">
                 <input type="submit" class="custom-button" value="Restart">
             </form>

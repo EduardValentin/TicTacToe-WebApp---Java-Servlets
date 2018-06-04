@@ -50,8 +50,8 @@ public class GameController {
     private String myUsername;
     private String opponentUsername;
     private final String SERVER_URI = "ws://localhost:9999/TicTacToeWeb/websocketendpoint";
-    public final String X_ICON_LOCATION = "C:\\Users\\Eduard\\Documents\\Developer\\TicTacToe-WebApp---Java-Servlets\\TicTacToeDesktopClient\\src\\main\\java\\com\\eduard\\tictactoedesktopclient\\game\\ui\\X.png";
-    public final String O_ICON_LOCATION = "C:\\Users\\Eduard\\Documents\\Developer\\TicTacToe-WebApp---Java-Servlets\\TicTacToeDesktopClient\\src\\main\\java\\com\\eduard\\tictactoedesktopclient\\game\\ui\\O.png";
+    public final String X_ICON_LOCATION = "C:\\Users\\Eduard\\Documents\\Developer\\TicTacToe-WebApp---Java-Servlets\\TicTacToeDesktopClient\\src\\main\\resources\\images\\X.png";
+    public final String O_ICON_LOCATION = "C:\\Users\\Eduard\\Documents\\Developer\\TicTacToe-WebApp---Java-Servlets\\TicTacToeDesktopClient\\src\\main\\resources\\images\\O.png";
 
     private GameController(){
         
